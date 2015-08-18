@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 
 
@@ -107,6 +109,19 @@ public class TelaJogo extends TelaBase {
             }
 
         }
+
+        if (indodireita){
+            // trocando imagem direita
+            jogador.setDrawable(new SpriteDrawable(new Sprite(texturajogadordireita)));
+
+        }else if(indoesquerda){
+            // trocando imagem esquerda
+            jogador.setDrawable(new SpriteDrawable(new Sprite(texturajogadoresquerda)));
+        }else{
+            // trocando imagem centro
+            jogador.setDrawable(new SpriteDrawable(new Sprite(texturajogador)));
+        }
+
     }
 
     // verifica quais teclas estao pressionadas
