@@ -1,7 +1,9 @@
 package br.grupointegrado.com;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -14,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -166,7 +169,9 @@ public class TelaJogo extends TelaBase {
         }else{
             if (musicaFundo.isPlaying()){ // se esta tocando
                 musicaFundo.stop(); // parar musica
+
             }
+            reiniciarJogo();
         }
 
 
@@ -176,6 +181,24 @@ public class TelaJogo extends TelaBase {
 
         palcoInformacoes.act(delta);
         palcoInformacoes.draw();
+    }
+
+    // verifica se o usuario pressionou enter para reiniciar o jogo
+    private void reiniciarJogo() {
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            Preferences preferencias = Gdx.app.getPreferences("SpaceInvaders");
+            int pontuacaoMaxima = preferencias.getInteger("pontuacaoMaxima", 0);
+
+            // verifica se a nova pontuação é maior que a pontuação maxima
+            if(pontuacao > pontuacaoMaxima){
+                preferencias.putInteger("pontuacaoMaxima", pontuacao);
+                preferencias.flush();
+            }
+
+            game.setScreen(new TelaMenu(game));
+
+        }
     }
 
     private void atualizarExplosoes(float delta) {
@@ -276,6 +299,7 @@ public class TelaJogo extends TelaBase {
                 if (meteoro.getY() + meteoro.getHeight() < 0) {
                     meteoro.remove(); // remove do palco
                     meteoros1.removeValue(meteoro, true); // remove da lista
+                    pontuacao -= 30;
                 }
             }
 
@@ -290,6 +314,7 @@ public class TelaJogo extends TelaBase {
                 if (meteoro.getY() + meteoro.getHeight() < 0) {
                     meteoro.remove(); // remove do palco
                     meteoros2.removeValue(meteoro, true); // remove da lista
+                    pontuacao -= 60;
                 }
 
             }
@@ -385,18 +410,62 @@ public class TelaJogo extends TelaBase {
         atirando = false;
 
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || clicouEsquerda()) {
 
             indoesquerda = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || clicouDireita()) {
 
             indodireita = true;
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.app.getType() == Application.ApplicationType.Android) {
             atirando = true;
         }
+    }
+
+    private boolean clicouEsquerda() {
+
+
+
+        if(Gdx.input.isTouched()){
+            Vector3 posicao = Vector3.X;
+            // captura clique na janela do windos
+            posicao.x = Gdx.input.getX();
+            posicao.y = Gdx.input.getY();
+
+            //converter para uma cordenada do jogo
+            posicao = camera.unproject(posicao);
+
+            float meio = camera.viewportWidth / 2;
+
+            if(posicao.x < meio){
+                return  true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean clicouDireita() {
+
+        if(Gdx.input.isTouched()){
+            Vector3 posicao = Vector3.X;
+            // captura clique na janela do windos
+            posicao.x = Gdx.input.getX();
+            posicao.y = Gdx.input.getY();
+
+            //converter para uma cordenada do jogo
+            posicao = camera.unproject(posicao);
+
+            float meio = camera.viewportWidth / 2;
+
+            if(posicao.x > meio){
+                return  true;
+            }
+        }
+
+        return false;
     }
 
 
